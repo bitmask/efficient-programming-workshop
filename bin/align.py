@@ -72,7 +72,7 @@ def main():
     # now actually do the alignment
     if sequences and matrix:
         try:
-            alignment = global_align.align(seq1, seq2, matrix)
+            alignment = global_align.align(seq1, seq2, matrix, gap=1)
         except:
             raise # TODO nice errors
 
