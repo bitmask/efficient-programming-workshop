@@ -2,8 +2,8 @@ import Exceptions
 
 def parse_fasta(fasta_filename):
     """Validate FASTA file
-    @return a dictionary
-    @param fasta FASTA file of protein sequences (iterator)
+    @return a dictionary keyed on fasta id to sequence
+    @param fasta_filename filename of file to parse
     """
 
     sequences = {}
