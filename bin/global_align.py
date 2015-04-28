@@ -1,6 +1,19 @@
 import Exceptions
 
-def get_matrix(request):
+def align(seq1, seq2, scoring_matrix, gap_penalty=2):
+    print "align has arguments: " 
+    print seq1 
+    print seq2 
+
+    alignment = '' # TODO
+    return alignment
+
+def print_alignment(alignment):
+    print "The final alignment is:"
+    print alignment # TODO
+    return True
+
+def get_scoring_matrix(request):
     avail_matrices = { 'default': 
                             {'A': 
                                 {'A':1, 'C':0, 'D':0, 'E':0, 'F':0, 'G':0, 'H':0, 'I':0, 'K':0, 'L':0, 'M':0, 'N':0, 'P':0, 'Q':0, 'R':0, 'S':0, 'T':0, 'V':0, 'W':0, 'Y':0},
@@ -49,16 +62,4 @@ def get_matrix(request):
     else:
          raise Exceptions.MissingMatrixType("Matrix type " + request + "does not exist")
 
-def align(seq1, seq2, matrix):
-    print "align has arguments: " 
-    print seq1 
-    print seq2 
-
-    alignment = '' # TODO
-    return alignment
-
-def print_alignment(alignment):
-    print "The final alignment is:"
-    print alignment # TODO
-    return True
 

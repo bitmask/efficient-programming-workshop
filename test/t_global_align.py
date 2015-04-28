@@ -17,10 +17,10 @@ class TestGlobalAlign (unittest.TestCase):
     def tearDown(self):
         pass
         
-    def test_get_matrix(self):
-        self.assertTrue(get_matrix('default'), "Can't fetch default (identity) matrix")
+    def test_get_scoring_matrix(self):
+        self.assertTrue(get_scoring_matrix('default'), "Can't fetch default (identity) scoring matrix")
         with self.assertRaises(Exceptions.MissingMatrixType):
-            get_matrix('dne')
+            get_scoring_matrix('dne')
 
     def test_align(self):
         # get some valid data from a test file
@@ -28,7 +28,7 @@ class TestGlobalAlign (unittest.TestCase):
         seq1, seq2 = parse_fasta.parse_fasta(valid).values()
 
         expected = 'expected' # TODO expected return value of align
-        self.assertEquals(align(seq1, seq2, get_matrix('default')), expected, "Alignment did not work properly")
+        self.assertEquals(align(seq1, seq2, get_scoring_matrix('default')), expected, "Alignment did not work properly")
     
 suite = unittest.TestLoader().loadTestsFromTestCase(TestGlobalAlign)
 unittest.TextTestRunner(verbosity=2).run(suite)
