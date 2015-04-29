@@ -44,7 +44,6 @@ def backtrack_DPM(seq1, seq2, DPM, scoring_matrix, gap_penalty):
         chr1 = seq1[i-1]
         chr2 = seq2[j-1]
 
-        ## CHANGE THE CODE HERE !!!!!!!!!!!!!!!!!!!! #
         match = DPM[i-1][j-1]+scoring_matrix[chr1][chr2] # What would be the score of the cell if seq1[i] and seq2[j] are matched 
         gap1 = DPM[i-1][j] - gap_penalty  # What would be the score if we have a gap aligned with seq2[j]
         gap2 = DPM[i][j-1] - gap_penalty  # What would be the score if we have a gap aligned with seq1[i]
