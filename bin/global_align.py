@@ -1,7 +1,8 @@
+# -*- coding: utf-8 -*-
 import Exceptions
 
 def fill_DPM(seq1, seq2, scoring_matrix, gap_penalty):
-    #Function to fill out the Dynmamic Programming matrix for given 2 sequences
+    #Function to fill out the Dynmamic Programming matrix for 2 given sequences
 
     #Initialize the DP_matrix
     DPM = [[0]*(len(seq1)+1) for i in range(len(seq2)+1)]
@@ -37,16 +38,16 @@ def backtrack_DPM(seq1, seq2, DPM, scoring_matrix, gap_penalty):
 
     alignment=[] # alignment is currently empty
     
-    # i and j will represent our current position
+    # i and j will represent our current position in the DPM
     # Iterate over i and j simultaneously, until one becomes 0
     while i!=0 and j!=0:
         chr1 = seq1[i-1]
         chr2 = seq2[j-1]
 
         ## CHANGE THE CODE HERE !!!!!!!!!!!!!!!!!!!!
-        match = 0 # What would be the score of the cell if you seq1[i] and seq2[j] are matched 
-        gap1 = 0  # What would be the score if we have gap aligned with seq2[j]
-        gap2 = 0  # What would be the score if we have gap aligned with seq1[i]
+        match = 0 # What would be the score of the cell if seq1[i] and seq2[j] are matched 
+        gap1 = 0  # What would be the score if we have a gap aligned with seq2[j]
+        gap2 = 0  # What would be the score if we have a gap aligned with seq1[i]
 
         # We have to come from the cell that gives us the maximum score
         # if gap1 is maximum, seq2[j] is aligned to gap

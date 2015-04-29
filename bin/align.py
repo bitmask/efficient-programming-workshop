@@ -55,8 +55,6 @@ def main():
         else:
             seq1, seq2 = sequences.values()
 
-    # TODO check if we have a nucleotide or protein fasta file
-
     # get the similarity scoring matrix to use
     if args.scoring_matrix:
         try:
@@ -74,7 +72,7 @@ def main():
         try:
             alignment = global_align.align(seq1, seq2, scoring_matrix)
         except:
-            raise # TODO nice errors
+            raise 
 
         # print the alignment
         if alignment:
