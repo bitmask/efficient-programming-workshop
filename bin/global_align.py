@@ -5,25 +5,25 @@ def fill_DPM(seq1, seq2, scoring_matrix, gap_penalty):
     #Function to fill out the Dynmamic Programming matrix for 2 given sequences
 
     #Initialize the DP_matrix
-    DPM = [[0]*(len(seq1)+1) for i in range(len(seq2)+1)]
+    DPM = [[0]*(len(seq2)+1) for i in range(len(seq1)+1)]
     
     # HERE COMES THE CODE #
     """
     PSEUDOCODE
         for i=0 : length(A)
-            F(i,0) ← (-1)*i
+            DPM(i,0) ← (-1)*i
 
         for j=0 to length(B)
-            F(0,j) ← (-1)*j
+            DPM(0,j) ← (-1)*j
 
         for i=1 to length(A)
             for j=1 to length(B)
             {
                 s =  1 if Ai = Bj, (-1) otherwise
-                Match ← F(i-1,j-1) + s
-                Delete ← F(i-1, j) - 1
-                Insert ← F(i, j-1) - 1
-                F(i,j) ← max(Match, Insert, Delete)
+                Match ← DPM(i-1,j-1) + s
+                Delete ← DPM(i-1, j) - 1
+                Insert ← DPM(i, j-1) - 1
+                DPM(i,j) ← max(Match, Insert, Delete)
              }
     """
 
@@ -44,10 +44,10 @@ def backtrack_DPM(seq1, seq2, DPM, scoring_matrix, gap_penalty):
         chr1 = seq1[i-1]
         chr2 = seq2[j-1]
 
-        ## CHANGE THE CODE HERE !!!!!!!!!!!!!!!!!!!!
-        match = 0 # What would be the score of the cell if seq1[i] and seq2[j] are matched 
-        gap1 = 0  # What would be the score if we have a gap aligned with seq2[j]
-        gap2 = 0  # What would be the score if we have a gap aligned with seq1[i]
+        ## CHANGE THE CODE HERE !!!!!!!!!!!!!!!!!!!! #
+        match = DPM[i-1][j-1]+scoring_matrix[chr1][chr2] # What would be the score of the cell if seq1[i] and seq2[j] are matched 
+        gap1 = DPM[i-1][j] - gap_penalty  # What would be the score if we have a gap aligned with seq2[j]
+        gap2 = DPM[i][j-1] - gap_penalty  # What would be the score if we have a gap aligned with seq1[i]
 
         # We have to come from the cell that gives us the maximum score
         # if gap1 is maximum, seq2[j] is aligned to gap
@@ -66,8 +66,8 @@ def backtrack_DPM(seq1, seq2, DPM, scoring_matrix, gap_penalty):
                 alignment.append((chr1,chr2,'|')) #match
             else:
                 alignment.append((chr1,chr2,':')) #mismatch
-                i = i-1
-                j = j-1
+            i = i-1
+            j = j-1
 
     # since we hit the wall (1st col or 1st row), there are just gaps left
     while i!=0:
@@ -93,7 +93,7 @@ def align(seq1, seq2, scoring_matrix, gap_penalty=2):
     #Backtrack on DPM and get the alignment
     alignment = backtrack_DPM(seq1, seq2, DPM, scoring_matrix, gap_penalty)
 
-    return alignment, DPM[-1][-1]
+    return alignment, DPM[-1][-1] # return the alignment and the score
 
 def print_alignment(alignment):
     # Prints the alignment
