@@ -1,6 +1,120 @@
+# -*- coding: utf-8 -*-
 import Exceptions
 
-def get_matrix(request):
+def fill_DPM(seq1, seq2, scoring_matrix, gap_penalty):
+    #Function to fill out the Dynmamic Programming matrix for 2 given sequences
+
+    #Initialize the DP_matrix
+    DPM = [[0]*(len(seq2)+1) for i in range(len(seq1)+1)]
+    
+    # HERE COMES THE CODE #
+    for i in range(0, len(seq1) + 1):
+        DPM[i][0] = -1 * i * gap_penalty
+    for j in range(0, len(seq2) + 1):
+        DPM[0][j] = -1 * j * gap_penalty
+
+    for i in range(1, len(seq1)+1):
+        for j in range(1, len(seq2)+1):
+            if seq1[i-1] == seq2[j-1]:
+                s=scoring_matrix[seq1[i-1]][seq2[j-1]]
+            else:
+                s=-1
+            match = DPM[i-1][j-1] + s
+            delete = DPM[i-1][j] - gap_penalty
+            insert = DPM[i][j-1] - gap_penalty
+            DPM[i][j] = max(match, delete, insert)
+
+    return DPM
+
+def backtrack_DPM(seq1, seq2, DPM, scoring_matrix, gap_penalty):
+    # Backtrack and construct the alignment from given DP_matrix
+
+    # Backtracking starts at the last cell of DP_matrix DPM[i][j]
+    i=len(seq1)
+    j=len(seq2)
+
+    alignment=[] # alignment is currently empty
+    
+    # i and j will represent our current position in the DPM
+    # Iterate over i and j simultaneously, until one becomes 0
+    while i!=0 and j!=0:
+        chr1 = seq1[i-1]
+        chr2 = seq2[j-1]
+
+        ## CHANGE THE CODE HERE !!!!!!!!!!!!!!!!!!!! #
+        match = DPM[i-1][j-1]+scoring_matrix[chr1][chr2] # What would be the score of the cell if seq1[i] and seq2[j] are matched 
+        gap1 = DPM[i-1][j] - gap_penalty  # What would be the score if we have a gap aligned with seq2[j]
+        gap2 = DPM[i][j-1] - gap_penalty  # What would be the score if we have a gap aligned with seq1[i]
+
+        # We have to come from the cell that gives us the maximum score
+        # if gap1 is maximum, seq2[j] is aligned to gap
+        if gap1 >= match and gap1 >= gap2:
+            alignment.append((chr1,'-',' ')) #gap for seq2
+            i = i-1
+ 
+       # if gap2 is maximum, seq2[j] is aligned to gap
+        elif gap2 >= match and gap2 >= gap1:
+            alignment.append(('-',chr2,' ')) #gap for seq1
+            j = j-1
+
+        # if match is maximum, seq1[i] and seq2[j] are aligned either match or mismatch
+        else:
+            if chr1==chr2:
+                alignment.append((chr1,chr2,'|')) #match
+            else:
+                alignment.append((chr1,chr2,':')) #mismatch
+            i = i-1
+            j = j-1
+
+    # since we hit the wall (1st col or 1st row), there are just gaps left
+    while i!=0:
+        chr1 = seq1[i-1]
+        alignment.append((chr1,'-',' '))
+        i = i-1
+    while j!=0:
+        chr2 = seq2[j-1]
+        alignment.append(('-',chr2,' '))
+        j = j-1
+
+    return alignment[::-1]
+
+def align(seq1, seq2, scoring_matrix, gap_penalty=2):
+    # Aligns two given sequences with dynamic programming
+    # Output is a list of 3-tuples (chr1,chr2,("|" for match, ":" for mismatch, " " for gap))
+    print "aligning two sequences: " 
+    print "Seq1:"+seq1 
+    print "Seq2:"+seq2
+
+    #Fill out the dynamic programming matrix
+    DPM = fill_DPM(seq1, seq2, scoring_matrix, gap_penalty)
+    #Backtrack on DPM and get the alignment
+    alignment = backtrack_DPM(seq1, seq2, DPM, scoring_matrix, gap_penalty)
+
+    return alignment, DPM[-1][-1] # return the alignment and the score
+
+def print_alignment(alignment):
+    # Prints the alignment
+    print "The final alignment is:\n"
+    line1=''
+    line2=''
+    line3=''
+
+    for (chr1,chr2,algn) in alignment:
+        line1 += chr1
+        line2 += chr2
+        line3 += algn
+
+        #limit each line with 50 characters
+        if len(line1)==50:
+            print line1+'\n'+line2+'\n'+line3+'\n'
+            line1 = ''
+            line2 = ''
+            line3 = ''
+
+    print line1+'\n'+line2+'\n'+line3
+    return True
+
+def get_scoring_matrix(request):
     avail_matrices = { 'default': 
                             {'A': 
                                 {'A':1, 'C':0, 'D':0, 'E':0, 'F':0, 'G':0, 'H':0, 'I':0, 'K':0, 'L':0, 'M':0, 'N':0, 'P':0, 'Q':0, 'R':0, 'S':0, 'T':0, 'V':0, 'W':0, 'Y':0},
@@ -49,77 +163,4 @@ def get_matrix(request):
     else:
          raise Exceptions.MissingMatrixType("Matrix type " + request + "does not exist")
 
-def align(seq1, seq2, matrix, gap=0):
-    row_l=len(seq1)+1
-    col_l=len(seq2)+1
-
-    #Fill out the DP matrix 
-    DPM=[]
-    #first column set
-    for j in range(col_l):
-        DPM.append([(-j)*gap])
-    #first row set
-    for i in range(1,row_l):
-        DPM[0].append((-i)*gap)
-    #fill out the rest
-    for i in range(1,row_l):
-        chr1=seq1[i-1]
-        for j in range(1,col_l):
-            chr2=seq2[j-1]
-            best = max(DPM[i-1][j-1]+matrix[chr1][chr2], DPM[i][j-1]-gap, DPM[i-1][j]-gap)
-            DPM[i].append(best)
-
-    alignment = []
-    #Backtracking the DP matrix
-    i=row_l-1
-    j=col_l-1
-    while i!=0 and j!=0:
-        chr1 = seq1[i-1]
-        chr2 = seq2[j-1]
-
-        match = DPM[i-1][j-1]+matrix[chr1][chr2]
-        gap1 = DPM[i-1][j] - gap
-        gap2 = DPM[i][j-1] - gap
-        #depending on the path followed; we decide gap, match or mismatch
-        if gap1 >= match and gap1 >= gap2:
-            alignment.append((chr1,'-',' ')) #gap in seq2
-            i = i-1
-        elif gap2 >= match and gap2 >= gap1:
-            alignment.append(('-',chr2,' ')) #gap in seq1
-            j = j-1
-        else:
-            if chr1==chr2:
-                alignment.append((chr1,chr2,'|')) #match
-            else:
-                alignment.append((chr1,chr2,':')) #mismatch
-            i = i-1
-            j = j-1
-    while i!=0:
-        chr1 = seq1[i-1]
-        alignment.append((chr1,'-',' '))
-        i = i-1
-    while j!=0:
-        chr2 = seq2[j-1]
-        alignment.append(('-',chr2,' '))
-        j = j-1
-
-    return alignment[::-1]
-
-def print_alignment(alignment):
-    print "The final alignment is:\n"
-    line1=''
-    line2=''
-    line3=''
-    for (chr1,chr2,algn) in alignment:
-        line1 += chr1
-        line2 += chr2
-        line3 += algn
-        
-        if len(line1)==50:
-            print line1+'\n'+line2+'\n'+line3+'\n'
-            line1 = ''
-            line2 = ''
-            line3 = ''
-    print line1+'\n'+line2+'\n'+line3
-    return True
 

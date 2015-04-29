@@ -22,8 +22,8 @@ def main():
                         required=True, 
                         dest='fasta', 
                         help='Fasta file to read sequences from') 
-    parser.add_argument('-m', '--matrix', 
-                        dest='matrix', 
+    parser.add_argument('-m', '--scoring_matrix', 
+                        dest='scoring_matrix', 
                         help='Similarity matrix to use for scoring.  Default=identity')
     parser.add_argument('--debug', 
                         action='store_true', 
@@ -37,7 +37,7 @@ def main():
     if args.verbose:
         sys.stderr.write("# CBioVikings Global Sequence Alignment\n")
         sys.stderr.write("# fasta file: " + str(args.fasta) + "\n")
-        sys.stderr.write("# matrix: " + str(args.matrix) + "\n")
+        sys.stderr.write("# scoring matrix: " + str(args.scoring_matrix) + "\n")
         if args.debug:
             sys.stderr.write("# debug is on\n")
     
@@ -55,26 +55,24 @@ def main():
         else:
             seq1, seq2 = sequences.values()
 
-    # TODO check if we have a nucleotide or protein fasta file
-
-    # get the similarity matrix to use
-    if args.matrix:
+    # get the similarity scoring matrix to use
+    if args.scoring_matrix:
         try:
-            matrix = global_align.get_matrix(args.matrix)
+            scoring_matrix = global_align.get_matrix(args.matrix)
         except:
             report_error("That matrix type is not available")
     else:
         try:
-            matrix = global_align.get_matrix('default')
+            scoring_matrix = global_align.get_matrix('default')
         except:
             report_error("Default matrix is not available")
 
     # now actually do the alignment
-    if sequences and matrix:
+    if sequences and scoring_matrix:
         try:
-            alignment = global_align.align(seq1, seq2, matrix, gap=1)
+            alignment = global_align.align(seq1, seq2, scoring_matrix)
         except:
-            raise # TODO nice errors
+            raise 
 
         # print the alignment
         if alignment:

@@ -17,18 +17,39 @@ class TestGlobalAlign (unittest.TestCase):
     def tearDown(self):
         pass
         
-    def test_get_matrix(self):
-        self.assertTrue(get_matrix('default'), "Can't fetch default (identity) matrix")
+    def test_get_scoring_matrix(self):
+        self.assertTrue(get_scoring_matrix('default'), "Can't fetch default (identity) scoring matrix")
         with self.assertRaises(Exceptions.MissingMatrixType):
-            get_matrix('dne')
+            get_scoring_matrix('dne')
 
     def test_align(self):
         # get some valid data from a test file
+        valid = "data/small.fasta" 
+        seq1, seq2 = parse_fasta.parse_fasta(valid).values()
+        expected_align = [ ('A', 'A', '|'), ('-', 'C', ' '), ('D', 'D', '|'), ('E', 'E', '|') ]
+        expected_score = 1
+        actual = align(seq1, seq2, get_scoring_matrix('default'))
+        self.assertEquals(actual[0], expected_align, "Alignment is not correct")
+        self.assertEquals(actual[1], expected_score, "Alignment score is not correct")
+        print_alignment(actual[0])
+
+    def test_align_larger(self):
         valid = "data/YAL068C.fasta" 
         seq1, seq2 = parse_fasta.parse_fasta(valid).values()
+        actual = align(seq1, seq2, get_scoring_matrix('default'))
+        expected_score = 116
+        self.assertEquals(actual[1], expected_score, "Alignment score is not correct")
+        print_alignment(actual[0])
 
-        expected = 'expected' # TODO expected return value of align
-        self.assertEquals(align(seq1, seq2, get_matrix('default')), expected, "Alignment did not work properly")
-    
+    def test_tenuous(self):
+        valid = "data/tenuous.fasta" 
+        seq1, seq2 = parse_fasta.parse_fasta(valid).values()
+        expected_align = [('C', 'C', '|'), ('C', 'D', ':'), ('C', 'E', ':'), ('C', 'C', '|'), ('D', 'C', ':'), ('E', 'C', ':'), ('C', 'C', '|')]
+        expected_score = -1
+        actual = align(seq1, seq2, get_scoring_matrix('default'))
+        self.assertEquals(actual[0], expected_align, "Alignment is not correct")
+        self.assertEquals(actual[1], expected_score, "Alignment score is not correct")
+        print_alignment(actual[0])
+  
 suite = unittest.TestLoader().loadTestsFromTestCase(TestGlobalAlign)
 unittest.TextTestRunner(verbosity=2).run(suite)
