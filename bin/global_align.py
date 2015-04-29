@@ -15,15 +15,12 @@ def fill_DPM(seq1, seq2, scoring_matrix, gap_penalty):
 
     for i in range(1, len(seq1)+1):
         for j in range(1, len(seq2)+1):
-            if seq1[i-1] == seq2[j-1]:
-                s=scoring_matrix[seq1[i-1]][seq2[j-1]]
-            else:
-                s=-1
-            match = DPM[i-1][j-1] + s
+            match = DPM[i-1][j-1] + scoring_matrix[seq1[i-1]][seq2[j-1]]
             delete = DPM[i-1][j] - gap_penalty
             insert = DPM[i][j-1] - gap_penalty
             DPM[i][j] = max(match, delete, insert)
 
+    print DPM
     return DPM
 
 def backtrack_DPM(seq1, seq2, DPM, scoring_matrix, gap_penalty):
