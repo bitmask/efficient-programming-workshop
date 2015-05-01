@@ -1,6 +1,8 @@
 import unittest
 
-import os, sys
+import os
+import sys
+
 lib_path = os.path.abspath('../bin')
 sys.path.append(lib_path)
 
@@ -8,6 +10,7 @@ from global_align import *
 import Exceptions
 
 import parse_fasta
+
 
 class TestGlobalAlign (unittest.TestCase):
 
@@ -26,7 +29,7 @@ class TestGlobalAlign (unittest.TestCase):
         # get some valid data from a test file
         valid = "data/small.fasta" 
         seq1, seq2 = parse_fasta.parse_fasta(valid).values()
-        expected_align = [ ('A', 'A', '|'), ('-', 'C', ' '), ('D', 'D', '|'), ('E', 'E', '|') ]
+        expected_align = [('A', 'A', '|'), ('-', 'C', ' '), ('D', 'D', '|'), ('E', 'E', '|')]
         expected_score = 1
         actual = align(seq1, seq2, get_scoring_matrix('default'))
         self.assertEquals(actual[0], expected_align, "Alignment is not correct")
@@ -44,7 +47,8 @@ class TestGlobalAlign (unittest.TestCase):
     def test_tenuous(self):
         valid = "data/tenuous.fasta" 
         seq1, seq2 = parse_fasta.parse_fasta(valid).values()
-        expected_align = [('C', 'C', '|'), ('C', 'D', ':'), ('C', 'E', ':'), ('C', 'C', '|'), ('D', 'C', ':'), ('E', 'C', ':'), ('C', 'C', '|')]
+        expected_align = [('C', 'C', '|'), ('C', 'D', ':'), ('C', 'E', ':'), ('C', 'C', '|'), ('D', 'C', ':'),
+                          ('E', 'C', ':'), ('C', 'C', '|')]
         expected_score = 3 
         actual = align(seq1, seq2, get_scoring_matrix('default'))
         self.assertEquals(actual[0], expected_align, "Alignment is not correct")
