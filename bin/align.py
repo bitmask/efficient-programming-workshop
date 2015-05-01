@@ -58,22 +58,23 @@ def main():
     # get the similarity scoring matrix to use
     if args.scoring_matrix:
         try:
-            scoring_matrix = global_align.get_matrix(args.matrix)
+            scoring_matrix = global_align.get_scoring_matrix(args.matrix)
         except:
             report_error("That matrix type is not available")
     else:
         try:
-            scoring_matrix = global_align.get_matrix('default')
+            scoring_matrix = global_align.get_scoring_matrix('default')
         except:
             report_error("Default matrix is not available")
 
     # now actually do the alignment
     if sequences and scoring_matrix:
         try:
-            alignment = global_align.align(seq1, seq2, scoring_matrix)
+            alignment, score = global_align.align(seq1, seq2, scoring_matrix)
         except:
             raise 
 
+        print "Alignment Score is: "+str(score)
         # print the alignment
         if alignment:
             global_align.print_alignment(alignment)

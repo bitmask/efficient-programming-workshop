@@ -20,7 +20,6 @@ def fill_DPM(seq1, seq2, scoring_matrix, gap_penalty):
             insert = DPM[i][j-1] - gap_penalty
             DPM[i][j] = max(match, delete, insert)
 
-    print DPM
     return DPM
 
 def backtrack_DPM(seq1, seq2, DPM, scoring_matrix, gap_penalty):
@@ -38,13 +37,12 @@ def backtrack_DPM(seq1, seq2, DPM, scoring_matrix, gap_penalty):
         chr1 = seq1[i-1]
         chr2 = seq2[j-1]
 
-        ## CHANGE THE CODE HERE !!!!!!!!!!!!!!!!!!!! #
         match = DPM[i-1][j-1]+scoring_matrix[chr1][chr2] # What would be the score of the cell if seq1[i] and seq2[j] are matched 
-        gap1 = DPM[i-1][j] - gap_penalty  # What would be the score if we have a gap aligned with seq2[j]
-        gap2 = DPM[i][j-1] - gap_penalty  # What would be the score if we have a gap aligned with seq1[i]
+        gap1 = DPM[i-1][j] - gap_penalty  # What would be the score if we have a gap aligned with seq1[i]
+        gap2 = DPM[i][j-1] - gap_penalty  # What would be the score if we have a gap aligned with seq2[j]
 
-        # We have to come from the cell that gives us the maximum score
-        # if gap1 is maximum, seq2[j] is aligned to gap
+        # We have to trace back to the cell which will give the maximum score
+        # if gap1 is maximum, seq1[i] is aligned to gap
         if gap1 >= match and gap1 >= gap2:
             alignment.append((chr1,'-',' ')) #gap for seq2
             i = i-1
@@ -54,7 +52,7 @@ def backtrack_DPM(seq1, seq2, DPM, scoring_matrix, gap_penalty):
             alignment.append(('-',chr2,' ')) #gap for seq1
             j = j-1
 
-        # if match is maximum, seq1[i] and seq2[j] are aligned either match or mismatch
+        # if match is maximum, seq1[i] and seq2[j] are aligned either as match or mismatch
         else:
             if chr1==chr2:
                 alignment.append((chr1,chr2,'|')) #match
@@ -73,7 +71,7 @@ def backtrack_DPM(seq1, seq2, DPM, scoring_matrix, gap_penalty):
         alignment.append(('-',chr2,' '))
         j = j-1
 
-    return alignment[::-1]
+    return alignment[::-1] #We return reersed list because we started appending the list with sequence ends
 
 def align(seq1, seq2, scoring_matrix, gap_penalty=2):
     # Aligns two given sequences with dynamic programming
