@@ -1,17 +1,20 @@
 import unittest
 
-import os, sys
+import os
+import sys
+
 lib_path = os.path.abspath('../bin')
 sys.path.append(lib_path)
 
 from parse_fasta import *
 import Exceptions
 
+
 class TestParseFasta (unittest.TestCase):
 
-    valid = "data/YAL068C.fasta" # this is a valid fasta file
-    invalid_nodata = "data/invalid_nodata.fasta" # this file contains 0 bytes
-    invalid_dne = "data/invalid_dne.fasta" # this file does not exist
+    valid = "data/YAL068C.fasta"  # this is a valid fasta file
+    invalid_nodata = "data/invalid_nodata.fasta"  # this file contains 0 bytes
+    invalid_dne = "data/invalid_dne.fasta"  # this file does not exist
 
     def setUp(self):
         pass
