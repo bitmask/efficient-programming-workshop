@@ -1,19 +1,22 @@
-
 # CBioVikings Efficient Programming Workshop Example Code
 
 # This code is in the public domain under CC0.  
 # https://creativecommons.org/publicdomain/zero/1.0/
-# You are free to use it, modify it, adapt it, include it in your own work, etc, all without attribution or license restrictions. 
+# You are free to use it, modify it, adapt it, include it in your own work, etc, all without attribution or license
+# restrictions.
 
 
 import argparse
 import sys
 import parse_fasta
 import global_align
+import Exceptions
+
 
 def report_error(string):
     sys.stderr.write(string + "\n")
     sys.exit(1)
+
 
 def main():
 
@@ -40,13 +43,18 @@ def main():
         sys.stderr.write("# scoring matrix: " + str(args.scoring_matrix) + "\n")
         if args.debug:
             sys.stderr.write("# debug is on\n")
-    
+
+    sequences = None
+    scoring_matrix = None
+    seq1 = None
+    seq2 = None
     # read sequences from the fasta file provided
     if args.fasta:
+
         try:
             # sequences is a dictionary of the fasta entries
             sequences = parse_fasta.parse_fasta(args.fasta)
-        except:
+        except Exceptions.EmptyFasta:
             report_error("There are no sequences in the fasta file " + args.fasta)
 
         # our algorithm will only align two sequences
@@ -59,12 +67,12 @@ def main():
     if args.scoring_matrix:
         try:
             scoring_matrix = global_align.get_scoring_matrix(args.matrix)
-        except:
+        except Exceptions.MissingMatrixType:
             report_error("That matrix type is not available")
     else:
         try:
             scoring_matrix = global_align.get_scoring_matrix('default')
-        except:
+        except Exceptions.MissingMatrixType:
             report_error("Default matrix is not available")
 
     # now actually do the alignment
@@ -74,7 +82,7 @@ def main():
         except:
             raise 
 
-        print "Alignment Score is: "+str(score)
+        print("Alignment Score is: "+str(score))
         # print the alignment
         if alignment:
             global_align.print_alignment(alignment)
