@@ -44,28 +44,24 @@ def backtrack_DPM(seq1, seq2, DPM, scoring_matrix, gap_penalty):
         chr1 = seq1[i-1]
         chr2 = seq2[j-1]
 
-        # HARD PROBLEM -- update these values and decrement i and j correctly so this loop terminates
+        # HARD PROBLEM 1 - How to trace back?
+        # update these values
         match = 0 # What would be the score of the cell if seq1[i] and seq2[j] are matched 
-        gap1 = 0  # What would be the score if we have a gap aligned with seq2[j]
-        gap2 = 0 # What would be the score if we have a gap aligned with seq1[i]
+        gap1 = 0  # What would be the score if we have a gap aligned with seq1[i]
+        gap2 = 0  # What would be the score if we have a gap aligned with seq2[j]
 
-        # We have to come from the cell that gives us the maximum score
-        # if gap1 is maximum, seq2[j] is aligned to gap
-        if gap1 >= match and gap1 >= gap2:
-            alignment.append((chr1,'-',' ')) #gap for seq2
- 
-       # if gap2 is maximum, seq2[j] is aligned to gap
-        elif gap2 >= match and gap2 >= gap1:
-            alignment.append(('-',chr2,' ')) #gap for seq1
-
-        # if match is maximum, seq1[i] and seq2[j] are aligned either match or mismatch
+        # HARD PROBLEM 2 - How to build the alignment?
+        # when tracing back to the cell that will give the maximum score
+        # HELP 1: decrement i and j correctly so this loop terminates
+        # HELP 2: use below code fragments to build alignment
+        alignment.append((chr1,'-',' ')) # if gap1 is maximum, seq1[i] is aligned to gap
+        alignment.append(('-',chr2,' ')) # if gap2 is maximum, seq2[j] is aligned to gap
+        if chr1==chr2:
+            alignment.append((chr1,chr2,'|')) # if match is maximum, seq1[i] and seq2[j] are aligned as match
         else:
-            if chr1==chr2:
-                alignment.append((chr1,chr2,'|')) #match
-            else:
-                alignment.append((chr1,chr2,':')) #mismatch
+            alignment.append((chr1,chr2,':')) # if match is maximum, seq1[i] and seq2[j] are aligned as mismatch
 
-    # since we hit the wall (1st col or 1st row), there are just gaps left
+    # since we hit the wall in DP (1st col or 1st row), there are just gaps left to align
     while i!=0:
         chr1 = seq1[i-1]
         alignment.append((chr1,'-',' '))
@@ -75,6 +71,7 @@ def backtrack_DPM(seq1, seq2, DPM, scoring_matrix, gap_penalty):
         alignment.append(('-',chr2,' '))
         j = j-1
 
+    # HARD PROBLEM 3 - Try explaining why we return the reversed list?
     return alignment[::-1]
 
 def align(seq1, seq2, scoring_matrix, gap_penalty=2):

@@ -58,12 +58,12 @@ def main():
     # get the similarity scoring matrix to use
     if args.scoring_matrix:
         try:
-            scoring_matrix = global_align.get_matrix(args.matrix)
+            scoring_matrix = global_align.get_scoring_matrix(args.matrix)
         except:
             report_error("That matrix type is not available")
     else:
         try:
-            scoring_matrix = global_align.get_matrix('default')
+            scoring_matrix = global_align.get_scoring_matrix('default')
         except:
             report_error("Default matrix is not available")
 
@@ -74,6 +74,7 @@ def main():
         except:
             raise 
 
+        print "Alignment Score is: "+str(score)
         # print the alignment
         if alignment:
             global_align.print_alignment(alignment)
