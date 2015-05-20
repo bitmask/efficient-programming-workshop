@@ -1,6 +1,6 @@
 
 # CBioVikings Efficient Programming Workshop
-## April 29th, 2015
+## May 5th, 2015
 
 This is example code to do a global sequence alignment which you are free to use and modify for your own projects.
 
