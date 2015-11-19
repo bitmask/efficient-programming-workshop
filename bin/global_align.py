@@ -46,33 +46,22 @@ def backtrack_dpm(seq1, seq2, dpm, scoring_matrix, gap_penalty):
         chr1 = seq1[i-1]
         chr2 = seq2[j-1]
 
+        cell = dpm[i-1][j-1]
+
         # What would be the score of the cell if seq1[i] and seq2[j] are matched
-        match = dpm[i-1][j-1] + scoring_matrix[chr1][chr2]
-
-        # What would be the score if we have a gap aligned with seq1[i]
-        gap1 = dpm[i-1][j] - gap_penalty
-
-        # What would be the score if we have a gap aligned with seq2[j]
-        gap2 = dpm[i][j-1] - gap_penalty
-
-        # We have to trace back to the cell which will give the maximum score
-        # if gap1 is maximum, seq1[i] is aligned to gap
-        if gap1 >= match and gap1 >= gap2:
-            alignment.append((chr1, '-', ' '))
-            i -= 1
- 
-       # if gap2 is maximum, seq2[j] is aligned to gap
-        elif gap2 >= match and gap2 >= gap1:
-            alignment.append(('-', chr2, ' '))
-            j -= 1
-
-        # if match is maximum, seq1[i] and seq2[j] are aligned either as match or mismatch
-        else:
+        if cell + scoring_matrix[chr1][chr2] == dpm[i][j]:
             if chr1 == chr2:
                 alignment.append((chr1, chr2, '|'))  # match
             else:
                 alignment.append((chr1, chr2, ':'))  # mismatch
             i -= 1
+            j -= 1
+        # What would be the score if we have a gap aligned with seq1[i]
+        elif cell - gap_penalty == dpm[i-1][j]:
+            alignment.append((chr1, '-', ' '))
+            i -= 1
+        else:
+            alignment.append(('-', chr2, ' '))
             j -= 1
 
     # since we hit the wall in DP (1st col or 1st row), there are just gaps left to align
